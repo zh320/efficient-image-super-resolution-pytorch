@@ -12,8 +12,6 @@ class MyConfig(BaseConfig):
 
         # Model
         self.model = 'srcnn'
-        self.in_channels = 1
-        self.out_channels = 1
 
         # Training
         self.total_epoch = 6400

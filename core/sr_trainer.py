@@ -13,13 +13,10 @@ from utils import (get_sr_metrics, sampler_set_epoch, log_config, de_parallel)
 class SRTrainer(BaseTrainer):
     def __init__(self, config):
         super().__init__(config)
-        if config.is_testing:
-            raise NotImplementedError()
-        else:
-            self.psnr = get_sr_metrics('psnr').to(self.device)
-            self.ssim = get_sr_metrics('ssim').to(self.device)
-            if config.metrics not in ['psnr', 'ssim']:
-                raise ValueError(f'Unsupport metrics type: {config.metrics}')
+        self.psnr = get_sr_metrics('psnr').to(self.device)
+        self.ssim = get_sr_metrics('ssim').to(self.device)
+        if config.metrics not in ['psnr', 'ssim']:
+            raise ValueError(f'Unsupport metrics type: {config.metrics}')
 
     def train_one_epoch(self, config):
         self.model.train()
@@ -61,6 +58,7 @@ class SRTrainer(BaseTrainer):
                                 (f'Epoch:{self.cur_epoch}/{config.total_epoch}{" "*4}|',
                                 f'Loss:{loss.detach():4.4g}{" "*4}|',)
                                 )
+
         return
 
     @torch.no_grad()
@@ -129,3 +127,68 @@ class SRTrainer(BaseTrainer):
             self.psnr.reset()
             self.ssim.reset()
         print(f'{"-"*25} Finish benchmarking {"-"*25}\n')
+
+    @torch.no_grad()
+    def predict(self, config):
+        from datasets import SRBaseDataset
+        if config.DDP:
+            raise ValueError('Predict mode currently does not support DDP.')
+
+        if config.test_bs != 1:
+            self.logger.info('Warning: Predict mode only support batch size 1\n')
+
+        self.logger.info('\nStart predicting...\n')
+
+        if config.test_lr:
+            test_score_path = f'{config.save_dir}/test_score_{config.model}_x{config.upscale}.txt'
+            if os.path.isfile(test_score_path):
+                os.remove(test_score_path)
+
+        for (images, img_names) in tqdm(self.test_loader):
+            hr = images[0]
+            bicubic = images[1]
+            img_name = img_names[0]
+
+            hr = hr.to(self.device, dtype=torch.float32)
+            if config.test_lr:
+                lr = images[2].to(self.device, dtype=torch.float32)
+                pred = self.model(lr).clamp(0.0, 1.0)
+
+                # Compute PSNR and SSIM if test lr image
+                self.psnr.update(pred.detach(), hr)
+                self.ssim.update(pred.detach(), hr)
+
+                psnr = self.psnr.compute()
+                ssim = self.ssim.compute()
+
+                self.psnr.reset()
+                self.ssim.reset()
+
+                with open(test_score_path, 'a+') as f:
+                    f.write(f'{img_name}\tPSNR: {psnr:.2f}\tSSIM: {ssim:.4f}\n')
+            else:
+                pred = self.model(hr).clamp(0.0, 1.0)
+
+            # BCHW --> HWC
+            if config.train_y:
+                # Need to concatenate [pred_y, bicubic_cb, bicubic_cr] to obtain predicted image
+                ycbcr = images[-1].numpy().squeeze(0)
+                pred = pred.mul(255.0).cpu().unsqueeze(-1).numpy().squeeze(0).squeeze(0)
+                pred = np.concatenate([pred, ycbcr[...,1:]], axis=-1)
+                pred = SRBaseDataset.ycbcr_to_rgb(pred)
+            else:
+                pred = pred.mul(255.0).cpu().numpy().squeeze(0).transpose([1, 2, 0])
+
+            pred = np.clip(pred, 0., 255.).astype(np.uint8)
+
+            # Saving results
+            img_suffix = img_name.split('.')[-1]
+            img_prefix = img_name[:-len(img_suffix)-1]
+            pred_path = f'{config.save_dir}/{img_prefix}_{config.model}_x{config.upscale}.{img_suffix}'
+            bicubic_path = f'{config.save_dir}/{img_prefix}_bicubic_x{config.upscale}.{img_suffix}'
+
+            pred = Image.fromarray(pred.astype(np.uint8))
+            pred.save(pred_path)
+
+            bicubic = Image.fromarray(bicubic.numpy().squeeze().astype(np.uint8))
+            bicubic.save(bicubic_path)

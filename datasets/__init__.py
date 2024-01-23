@@ -1,4 +1,5 @@
 from torch.utils.data import DataLoader
+from .sr_base_dataset import SRBaseDataset
 from .sr_dataset import SRDataset
 from .val_datasets import Set5, Set14, BSD100
 
@@ -71,4 +72,15 @@ def get_val_loader(config):
 
 
 def get_test_loader(config): 
-    raise NotImplementedError()
+    from .test_dataset import TestDataset
+    dataset = TestDataset(config)
+
+    config.test_num = len(dataset)
+
+    if config.DDP:
+        raise NotImplementedError()
+
+    else:
+        test_loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=config.num_workers)
+
+    return test_loader

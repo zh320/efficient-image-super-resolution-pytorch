@@ -8,8 +8,8 @@ class BaseConfig:
 
         # Model
         self.model = None
-        self.in_channels = 1
-        self.out_channels = 1
+        self.in_channels = None
+        self.out_channels = None
 
         # Training
         self.total_epoch = 3200
@@ -28,6 +28,7 @@ class BaseConfig:
         self.is_testing = False
         self.test_bs = 1
         self.test_data_folder = None
+        self.test_lr = False    # Test downscaled image
         
         # Benchmark
         self.benchmark = False
@@ -38,9 +39,9 @@ class BaseConfig:
         
         # Scheduler
         self.lr_policy = 'constant'
-        self.step_size = 2e5        # For step lr scheduler
-        self.step_gamma = 0.5       # For step lr scheduler
-        self.warmup_epochs = 3      # For cos_warmup lr scheduler
+        self.warmup_epochs = 3
+        self.step_size = None
+        self.step_gamma = 0.1
         
         # Optimizer
         self.optimizer_type = 'adam'
@@ -61,7 +62,7 @@ class BaseConfig:
         self.load_ckpt_path = None
         self.base_workers = 8
         self.random_seed = 1
-        self.use_ema = True
+        self.use_ema = False
         self.ema_decay = 0.999
         self.ema_start_epoch = 0
 
@@ -87,3 +88,9 @@ class BaseConfig:
 
         if isinstance(self.patch_size, int):
             self.patch_size = [self.patch_size, self.patch_size]
+
+        if self.in_channels is None:
+            self.in_channels = 1 if self.train_y else 3
+
+        if self.out_channels is None:
+            self.out_channels = 1 if self.train_y else 3
