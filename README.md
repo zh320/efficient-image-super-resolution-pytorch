@@ -1,8 +1,12 @@
 # Introduction
 
 PyTorch implementation of efficient image super-resolution models.  
-\
+
+
+
 <img src="https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/demo.png" width="100%" height="100%" />
+
+# 
 
 # Requirements
 
@@ -53,7 +57,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python main.py
 
 | Model                                                                                                            | Year | Set5            |               | Set14       |               | BSD100      |               |
 |:----------------------------------------------------------------------------------------------------------------:|:----:|:---------------:|:-------------:|:-----------:|:-------------:|:-----------:|:-------------:|
-|                                                                                                                  |      | PSNR (paper/my) | SSIM          | PSNR        | SSIM          | PSNR        | SSIM          |
+| 2x                                                                                                               |      | PSNR (paper/my) | SSIM          | PSNR        | SSIM          | PSNR        | SSIM          |
 | [CARN](https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/carn_2x.pth)     | 2018 | 37.76/37.90     | 0.9590/0.9605 | 33.52/33.14 | 0.9166/0.9152 | 32.09/32.06 | 0.8978/0.8985 |
 | [DRCN](https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/drcn_2x.pth)     | 2015 | 37.63/37.85     | 0.9588/0.9604 | 33.04/33.22 | 0.9118/0.916  | 31.85/32.05 | 0.8942/0.8982 |
 | [DRRN](https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/drrn_2x.pth)     | 2017 | 37.74/37.76     | 0.9591/0.9599 | 33.23/33.14 | 0.9136/0.9149 | 32.05/31.99 | 0.8973/0.8974 |
@@ -64,8 +68,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python main.py
 | [LapSRN](https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/lapsrn_2x.pth) | 2017 | 37.52/37.59     | 0.9591/0.9592 | 32.99/32.96 | 0.9124/0.9138 | 31.80/31.89 | 0.8952/0.8961 |
 | [SRCNN](https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/srcnn_2x.pth)   | 2014 | 36.66/36.88     | 0.9542/0.9561 | 32.45/32.42 | 0.9067/0.9092 | 31.36/31.50 | 0.8879/0.8907 |
 | [VDSR](https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/vdsr_2x.pth)     | 2015 | 37.53/37.74     | 0.9587/0.9598 | 33.03/33.06 | 0.9124/0.9145 | 31.90/31.97 | 0.8960/0.8973 |
-
-
 
 # Prepare the dataset
 
