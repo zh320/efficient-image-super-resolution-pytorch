@@ -70,7 +70,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python main.py
 | [SRDenseNet](https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/srdensenet_2x.pth) | 2017 | I                    | n.a./37.67      | n.a./0.9596   | n.a./33.05  | n.a./0.9142   | n.a./31.93  | n.a./0.8967   |
 | [VDSR](https://github.com/zh320/efficient-image-super-resolution-pytorch/releases/download/v1.0/vdsr_2x.pth)             | 2015 | T+B                  | 37.53/37.74     | 0.9587/0.9598 | 33.03/33.06 | 0.9124/0.9145 | 31.90/31.97 | 0.8960/0.8973 |
 
-[<sup>1</sup> B (BSD200), D (DIV2K), G (General100), I (ImageNet), T (T91)]
+[<sup>1</sup> Original training dataset, which are short for B (BSD200), D (DIV2K), G (General100), I (ImageNet), T (T91). In my experiments, the training dataset is T + G + B.]
 
 # Prepare the dataset
 
