@@ -8,11 +8,12 @@ from .fsrcnn import FSRCNN
 from .idn import IDN
 from .lapsrn import LapSRN
 from .srcnn import SRCNN
+from .srdensenet import SRDenseNet
 from .vdsr import VDSR
 
 
 model_hub = {'carn':CARN, 'drcn':DRCN, 'drrn':DRRN, 'edsr':EDSR, 'espcn':ESPCN, 'fsrcnn':FSRCNN, 
-             'idn':IDN, 'lapsrn':LapSRN, 'srcnn':SRCNN, 'vdsr':VDSR,}
+             'idn':IDN, 'lapsrn':LapSRN, 'srcnn':SRCNN, 'srdensenet':SRDenseNet, 'vdsr':VDSR,}
 
 
 def get_model(config):
