@@ -5,7 +5,7 @@ class Set5(SRBaseDataset):
     def __init__(self, config, mode):
         data_split =  {
                         'val': [
-                                'val/Set5',
+                                f'val/Set5/image_SRF_{config.upscale}',
                                 ],
                         }
 
@@ -16,7 +16,7 @@ class Set14(SRBaseDataset):
     def __init__(self, config, mode):
         data_split =  {
                         'val': [
-                                'val/Set14',
+                                f'val/Set14/image_SRF_{config.upscale}',
                                 ],
                         }
 
@@ -27,7 +27,7 @@ class BSD100(SRBaseDataset):
     def __init__(self, config, mode):
         data_split =  {
                         'val': [
-                                'val/BSD100',
+                                f'val/BSD100/image_SRF_{config.upscale}',
                                 ],
                         }
 

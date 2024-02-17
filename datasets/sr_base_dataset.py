@@ -46,14 +46,32 @@ class SRBaseDataset(Dataset):
 
         self.num = len(self.hr_images)
 
-    def rgb_to_y(self, img):
+    @staticmethod
+    def rgb_to_ycbcr(img, y_only=False):
         if not isinstance(img, np.ndarray):
             raise ValueError(f'\nInput must be np.ndarray, but got type: {type(img)} instead.')
         if img.shape[2] != 3:
             raise ValueError(f'\nInput should be RGB channel array, but got {img.shape[2]} channel instead.')
 
-        img = np.dot(img, [65.481, 128.553, 24.966]) / 255. + 16.
-        return img.astype(np.float32)
+        y = (np.dot(img, [65.481, 128.553, 24.966]) / 255. + 16.).astype(np.float32)
+        if y_only:
+            return y
+        else:
+            cb = (np.dot(img, [-37.945, -74.494, 112.439]) / 255. + 128.).astype(np.float32)
+            cr = (np.dot(img, [112.439, -94.154, -18.285]) / 255. + 128.).astype(np.float32)
+            return np.array([y, cb, cr]).transpose([1, 2, 0])
+
+    @staticmethod
+    def ycbcr_to_rgb(img):
+        if not isinstance(img, np.ndarray):
+            raise ValueError(f'\nInput must be np.ndarray, but got type: {type(img)} instead.')
+        if img.shape[2] != 3:
+            raise ValueError(f'\nInput should be 3-channel array, but got {img.shape[2]} channel instead.')
+
+        r = (np.dot(img, [298.082, 0, 408.583]) / 255. - 222.921).astype(np.float32)
+        g = (np.dot(img, [298.082, -100.291, - 208.12]) / 255. + 135.576).astype(np.float32)
+        b = (np.dot(img, [298.082, 516.412, 0]) / 255. - 276.836).astype(np.float32)
+        return np.array([r, g, b]).transpose([1, 2, 0])
 
     def __len__(self):
         return len(self.hr_images)
@@ -119,8 +137,8 @@ class SRBaseDataset(Dataset):
 
         if self.train_y:
             # RGB to YCbCr (only need Y channel here)
-            hr = self.rgb_to_y(hr)
-            lr = self.rgb_to_y(lr)
+            hr = self.rgb_to_ycbcr(hr, y_only=True)
+            lr = self.rgb_to_ycbcr(lr, y_only=True)
 
             # HW to CHW --> normalize
             hr = np.expand_dims(hr / 255., 0)

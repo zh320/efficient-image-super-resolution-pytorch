@@ -62,7 +62,7 @@ class BaseConfig:
         self.load_ckpt_path = None
         self.base_workers = 8
         self.random_seed = 1
-        self.use_ema = False
+        self.use_ema = True
         self.ema_decay = 0.999
         self.ema_start_epoch = 0
 
